@@ -1,0 +1,98 @@
+# =======================================
+# Unity - .gitignore completo
+# =======================================
+
+# --- SISTEMA ---
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+UserSettings/
+sysinfo.txt
+
+# --- CACHE E AUTOGERADOS ---
+*.pidb
+*.suo
+*.user
+*.userprefs
+*.unityproj
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# --- VISUAL STUDIO / RIDER ---
+.vs/
+.vscode/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.sln.dotSettings
+*.user
+*.dotCover
+
+# --- UNITY CLOUD / COLLAB ---
+.collabignore
+.CollabCache/
+.resharper/
+
+# --- LOGS E BACKUPS ---
+*.log
+*.stackdump
+*.bak
+*.tmp
+*.temp
+*.old
+
+# --- PLATAFORMAS ---
+# Build outputs (Windows, Mac, Linux, WebGL, Android, iOS, etc.)
+[Bb]uild/
+[Bb]uilds/
+ExportedObj/
+*.apk
+*.aab
+*.xcodeproj/
+*.xcworkspace/
+*.xcuserstate
+*.gradle/
+.gradle/
+*.keystore
+*.jks
+
+# --- TEXTURES E META ---
+# (Os .meta são necessários! Nunca ignores eles.)
+# *.meta    <-- NÃO DESCOMENTES!
+
+# --- LIGHTMAPS / GI CACHE ---
+[Ll]ightmapSnapshot/
+[Ll]ightingData.asset
+[Ll]ibrary/Artifacts/
+[Ll]ibrary/ShaderCache/
+[Ll]ibrary/GICache/
+
+# --- CRASH / PERF ---
+*.nps
+*.npt
+*.psess
+*.vsp
+*.vspx
+
+# --- PACKAGES ---
+# Ignorar cache local de pacotes, mas manter o manifest.json
+Packages/com.unity.*
+!Packages/manifest.json
+!Packages/packages-lock.json
+
+# --- PROJETO ---
+# Mantém as cenas, assets e scripts
+Assets/
+!Assets/**/*
+!ProjectSettings/**/*
+!Packages/**/*
+~~
