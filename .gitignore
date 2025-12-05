@@ -50,49 +50,79 @@ sysinfo.txt
 *.temp
 *.old
 
-# --- PLATAFORMAS ---
-# Build outputs (Windows, Mac, Linux, WebGL, Android, iOS, etc.)
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
 [Bb]uild/
 [Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+
+# Unity cache / packages
+UserSettings/
+.vscode/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+
+# Visual Studio
+.vs/
+.vscode/
+*.CodeAnalysisLog.xml
+*.sln.docstates
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Autogerados por Unity
 ExportedObj/
-*.apk
-*.aab
-*.xcodeproj/
-*.xcworkspace/
-*.xcuserstate
-*.gradle/
+.consulo/
+
+# Collab
+.collabignore
+.collab/
+
+# Gradle (Android)
 .gradle/
-*.keystore
-*.jks
+*.apk
+*.aar
+*.lock
 
-# --- TEXTURES E META ---
-# (Os .meta são necessários! Nunca ignores eles.)
-# *.meta    <-- NÃO DESCOMENTES!
+# Logs
+*.log
 
-# --- LIGHTMAPS / GI CACHE ---
-[Ll]ightmapSnapshot/
-[Ll]ightingData.asset
-[Ll]ibrary/Artifacts/
-[Ll]ibrary/ShaderCache/
-[Ll]ibrary/GICache/
+# Crash e debug
+crashlytics-build.properties
 
-# --- CRASH / PERF ---
-*.nps
-*.npt
-*.psess
-*.vsp
-*.vspx
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
 
-# --- PACKAGES ---
-# Ignorar cache local de pacotes, mas manter o manifest.json
-Packages/com.unity.*
-!Packages/manifest.json
-!Packages/packages-lock.json
+# Builds locais
+*.exe
+*.app
+*.unitypackage
+*.apk
+*.xcodeproj
+*.xcworkspace
 
-# --- PROJETO ---
-# Mantém as cenas, assets e scripts
-Assets/
-!Assets/**/*
-!ProjectSettings/**/*
-!Packages/**/*
-~~
+# Input System (novo)
+*.inputactions*
+
+# URP/SRP artefatos
+Assets/GraphicsSettings.asset
+Assets/QualitySettings.asset
