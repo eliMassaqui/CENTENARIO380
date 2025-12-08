@@ -3,28 +3,36 @@ using UnityEngine;
 public class SkateboardController : MonoBehaviour
 {
     [Header("Configurações de movimento")]
-    public float walkSpeed = 2f;        // Velocidade normal
-    public float runSpeed = 5f;         // Velocidade ao correr (Shift)
-    public float rotationSpeed = 100f;  // Velocidade da rotação
-    public float acceleration = 5f;     // Quão rápido alcança a velocidade desejada
+    public float walkSpeed = 2f;
+    public float runSpeed = 5f;
+    public float rotationSpeed = 100f;
+    public float acceleration = 5f;
+
+    [Header("Configurações de pulo")]
+    public float jumpHeight = 0.5f;        // Altura do pulo
+    public float jumpDuration = 0.5f;      // Duração do pulo (subida + descida)
+    public float groundCheckDistance = 1f; // Distância do Raycast para medir altura do chão
+    public LayerMask groundLayer;          // Layer do chão
 
     [Header("Referências")]
-    public Animator animator;           // Animator do personagem
+    public Animator animator;
 
     private float currentSpeed = 0f;
     private float targetSpeed = 0f;
+
+    // Pulo
+    private bool isJumping = false;
+    private float jumpProgress = 0f;
+    private float offsetY = 0f;            // Offset vertical do pulo
 
     void Start()
     {
         if (animator == null)
             animator = GetComponent<Animator>();
 
-        // ✅ Corrige o bug de girar sozinho após colisão
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
-        {
-            rb.freezeRotation = true; // Impede que a física gire o objeto
-        }
+            rb.freezeRotation = true;
     }
 
     void Update()
@@ -33,29 +41,64 @@ public class SkateboardController : MonoBehaviour
         float turnInput = Input.GetAxis("Horizontal");
         bool isRunning = Input.GetKey(KeyCode.LeftShift);
 
-        // Determina a velocidade alvo (aceleração gradual)
+        // Velocidade alvo
         targetSpeed = (isRunning ? runSpeed : walkSpeed) * moveInput;
-
-        // Interpola suavemente para a velocidade atual
         currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, Time.deltaTime * acceleration);
 
-        // Movimento frontal/trás
+        // Movimento horizontal
         transform.Translate(Vector3.forward * currentSpeed * Time.deltaTime);
 
-        // Rotação e tilt apenas se estiver se movendo
+        // Rotação e tilt
         if (Mathf.Abs(currentSpeed) > 0.01f)
         {
-            // Rotação
             transform.Rotate(Vector3.up * turnInput * rotationSpeed * Time.deltaTime);
-
-            // Inclinação ao virar (tilt)
             float tilt = turnInput * 15f;
             transform.localRotation = Quaternion.Euler(0, transform.localEulerAngles.y, -tilt);
         }
         else
         {
-            // Quando parado, tilt é 0 (sem interpolação)
             transform.localRotation = Quaternion.Euler(0, transform.localEulerAngles.y, 0);
+        }
+
+        // Medir altura do chão usando Raycast
+        float groundHeight = GetGroundHeight();
+
+        // Pulo: apenas para frente (moveInput > 0)
+        if (!isJumping && moveInput > 0f)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                isJumping = true;
+                jumpProgress = 0f;
+                animator.SetTrigger("Jump");
+            }
+        }
+
+        // Atualiza pulo
+        if (isJumping)
+        {
+            jumpProgress += Time.deltaTime / jumpDuration;
+            offsetY = Mathf.Sin(jumpProgress * Mathf.PI) * jumpHeight;
+
+            Vector3 pos = transform.position;
+            pos.y = groundHeight + offsetY;
+            transform.position = pos;
+
+            if (jumpProgress >= 1f)
+            {
+                isJumping = false;
+                offsetY = 0f;
+                Vector3 resetPos = transform.position;
+                resetPos.y = groundHeight;
+                transform.position = resetPos;
+            }
+        }
+        else
+        {
+            // Garante que o personagem siga a altura do chão quando não estiver pulando
+            Vector3 pos = transform.position;
+            pos.y = groundHeight;
+            transform.position = pos;
         }
 
         // Atualiza animações
@@ -79,6 +122,21 @@ public class SkateboardController : MonoBehaviour
             animator.SetBool("isRunning", false);
             animator.SetBool("isScooterIdle", false);
             animator.SetBool("isIdle", true);
+        }
+    }
+
+    // Retorna a altura do chão abaixo do personagem
+    float GetGroundHeight()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, out hit, groundCheckDistance, groundLayer))
+        {
+            return hit.point.y;
+        }
+        else
+        {
+            // Se não detectar chão, retorna altura atual
+            return transform.position.y;
         }
     }
 }
