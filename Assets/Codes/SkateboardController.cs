@@ -6,11 +6,13 @@ public class SkateboardController : MonoBehaviour
     public float walkSpeed = 2f;        // Velocidade normal
     public float runSpeed = 5f;         // Velocidade ao correr (Shift)
     public float rotationSpeed = 100f;  // Velocidade da rotação
+    public float acceleration = 5f;     // Quão rápido alcança a velocidade desejada
 
     [Header("Referências")]
-    public Animator animator;           // Arrasta o Animator do personagem aqui
+    public Animator animator;           // Animator do personagem
 
     private float currentSpeed = 0f;
+    private float targetSpeed = 0f;
 
     void Start()
     {
@@ -20,44 +22,56 @@ public class SkateboardController : MonoBehaviour
 
     void Update()
     {
-        float move = Input.GetAxis("Vertical");
-        float turn = Input.GetAxis("Horizontal");
-        bool isRunning = Input.GetKey(KeyCode.LeftShift); // Shift ativa corrida
+        float moveInput = Input.GetAxis("Vertical");
+        float turnInput = Input.GetAxis("Horizontal");
+        bool isRunning = Input.GetKey(KeyCode.LeftShift);
 
-        // Calcula a velocidade atual (normal ou corrida)
-        currentSpeed = isRunning ? runSpeed : walkSpeed;
+        // Determina a velocidade alvo (aceleração gradual)
+        targetSpeed = (isRunning ? runSpeed : walkSpeed) * moveInput;
 
-        // Movimento frontal/trás (sem física real)
-        if (move != 0)
+        // Interpola suavemente para a velocidade atual
+        currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, Time.deltaTime * acceleration);
+
+        // Movimento frontal/trás
+        transform.Translate(Vector3.forward * currentSpeed * Time.deltaTime);
+
+        // Rotação e tilt apenas se estiver se movendo
+        if (Mathf.Abs(currentSpeed) > 0.01f)
         {
-            transform.Translate(Vector3.forward * move * currentSpeed * Time.deltaTime);
+            // Rotação
+            transform.Rotate(Vector3.up * turnInput * rotationSpeed * Time.deltaTime);
 
+            // Inclinação ao virar (tilt)
+            float tilt = turnInput * 15f;
+            transform.localRotation = Quaternion.Euler(0, transform.localEulerAngles.y, -tilt);
+        }
+        else
+        {
+            // Quando parado, tilt é 0 (sem interpolação)
+            transform.localRotation = Quaternion.Euler(0, transform.localEulerAngles.y, 0);
+        }
+
+        // Atualiza animações
+        if (Mathf.Abs(currentSpeed) > 0.01f)
+        {
             if (isRunning)
             {
-                animator.SetBool("isRunning", true);   // Ativa animação de corrida
+                animator.SetBool("isRunning", true);
                 animator.SetBool("isScooterIdle", false);
                 animator.SetBool("isIdle", false);
             }
             else
             {
                 animator.SetBool("isRunning", false);
-                animator.SetBool("isScooterIdle", true); // Animação scooter normal
+                animator.SetBool("isScooterIdle", true);
                 animator.SetBool("isIdle", false);
             }
         }
         else
         {
-            // Sem movimento → animação parada total
             animator.SetBool("isRunning", false);
             animator.SetBool("isScooterIdle", false);
             animator.SetBool("isIdle", true);
         }
-
-        // Rotação do personagem
-        transform.Rotate(Vector3.up * turn * rotationSpeed * Time.deltaTime);
-
-        // Inclinação leve ao virar (efeito visual, opcional)
-        float tilt = Mathf.Lerp(0, turn * 15f, Time.deltaTime * 5f);
-        transform.localRotation = Quaternion.Euler(0, transform.localEulerAngles.y, -tilt);
     }
 }
