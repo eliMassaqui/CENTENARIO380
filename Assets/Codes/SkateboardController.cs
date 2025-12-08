@@ -18,6 +18,13 @@ public class SkateboardController : MonoBehaviour
     {
         if (animator == null)
             animator = GetComponent<Animator>();
+
+        // ✅ Corrige o bug de girar sozinho após colisão
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.freezeRotation = true; // Impede que a física gire o objeto
+        }
     }
 
     void Update()
